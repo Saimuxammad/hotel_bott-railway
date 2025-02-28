@@ -3,6 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 from handlers.booking import booking_handler
 from database import init_db
 from handlers.main_menu import main_menu_handler
+import os
 app = Flask(__name__)
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 

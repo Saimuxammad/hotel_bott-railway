@@ -14,7 +14,8 @@ class Booking(Base):
     room_type = Column(String)
 
 DATABASE_URL = os.getenv("DATABASE_URL")  # Получаем URL базы из переменной окружения
-
+if not DATABASE_URL:
+    raise ValueError("Ошибка: DATABASE_URL не задан!")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
