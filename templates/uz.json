@@ -4,3 +4,4 @@
   "check_in": "Kelish sanasi",
   "check_out": "Ketish sanasi"
 }
+system_prompt = "Siz Mercury Hotelning yordamchisisiz. Xonalar, bron, tadbirlar haqida ma'lumot bering."
