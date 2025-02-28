@@ -5,7 +5,13 @@ from database import init_db
 from handlers.main_menu import main_menu_handler
 import os
 app = Flask(__name__)
+
+from dotenv import load_dotenv
+load_dotenv()  # Загрузка переменных из .env
+
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
+if not BOT_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN не найден! Проверьте файл .env или настройки Railway.")
 
 # Инициализация бота
 application = ApplicationBuilder().token(BOT_TOKEN).build()

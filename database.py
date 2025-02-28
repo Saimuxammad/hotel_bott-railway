@@ -1,8 +1,15 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date
+from dotenv import load_dotenv
 import os
+from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
+load_dotenv()  # Загрузка переменных из .env
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL не задан!")
+
+engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
 class Booking(Base):
@@ -13,27 +20,27 @@ class Booking(Base):
     check_out = Column(Date)
     room_type = Column(String)
 
-DATABASE_URL = os.getenv("DATABASE_URL")  # Получаем URL базы из переменной окружения
-if not DATABASE_URL:
-    raise ValueError("Ошибка: DATABASE_URL не задан!")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# ✅ Функция сохранения бронирования
-def save_booking(user_id, check_in, check_out, room_type):
-    session = SessionLocal()
-    new_booking = Booking(
-        user_id=user_id,
-        check_in=check_in,
-        check_out=check_out,
-        room_type=room_type
-    )
-    session.add(new_booking)
-    session.commit()
-    session.refresh(new_booking)
-    session.close()
-    return new_booking
-
-# ✅ Функция для инициализации БД
 def init_db():
     Base.metadata.create_all(engine)
+
+# database.py
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+engine = create_engine(os.getenv("DATABASE_URL"))
+Session = sessionmaker(bind=engine)
+
+def save_booking(user_data):
+    session = Session()
+    booking = Booking(
+        user_id=user_data['user_id'],
+        check_in=user_data['check_in'],
+        check_out=user_data['check_out'],
+        room_type=user_data['room_type']
+    )
+    session.add(booking)
+    session.commit()
+    session.close()
