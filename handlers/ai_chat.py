@@ -1,5 +1,5 @@
 from openai import OpenAI
-from telegram.ext import MessageHandler, Filters
+from telegram.ext import MessageHandler, filters
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -10,4 +10,4 @@ async def handle_ai_chat(update, context):
     )
     await update.message.reply_text(response.choices[0].message.content)
 
-ai_chat_handler = MessageHandler(Filters.text & ~Filters.command, handle_ai_chat)
+ai_chat_handler = MessageHandler(filters.text & ~filters.command, handle_ai_chat)
