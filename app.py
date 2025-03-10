@@ -26,7 +26,15 @@ application = ApplicationBuilder().token(BOT_TOKEN).build()
 application.add_handler(main_menu_handler)
 application.add_handler(booking_handler)
 
-# 🔥 Вебхук с исправлением `async` (Flask не поддерживает async-функции напрямую)
+# ✅ Инициализация бота перед обработкой вебхука
+async def init_telegram():
+    await application.initialize()  # <-- Это исправляет ошибку
+    await application.start()
+    await application.updater.start_polling()
+
+asyncio.run(init_telegram())  # <-- Запуск бота при старте
+
+# 🔥 Вебхук Flask (Синхронный)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     update = request.get_json()
@@ -34,7 +42,7 @@ def webhook():
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        asyncio.run(application.process_update(telegram_update))  # ✅ Теперь `async` работает!
+        asyncio.run(application.process_update(telegram_update))  # ✅ Теперь корректно
 
     return 'OK', 200
 
