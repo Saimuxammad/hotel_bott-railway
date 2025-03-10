@@ -47,7 +47,7 @@ async def webhook():
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        await application.process_update(telegram_update)  # Теперь без ошибок
+        application.create_task(application.process_update(telegram_update))
 
     return 'OK', 200
 
