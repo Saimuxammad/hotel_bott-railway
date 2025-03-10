@@ -3,7 +3,7 @@ import logging
 import asyncio
 from flask import Flask, request
 from telegram import Update
-from telegram.ext import Application, ApplicationBuilder
+from telegram.ext import Application
 from handlers.booking import booking_handler
 from handlers.main_menu import main_menu_handler
 from database import init_db
@@ -34,12 +34,11 @@ async def start_bot():
     await application.updater.start_polling()
 
 
-# ✅ Запуск бота в отдельном потоке
-loop = asyncio.get_event_loop()
-loop.create_task(start_bot())
+# ✅ Запуск бота через `asyncio.run()`
+asyncio.run(start_bot())
 
 
-# ✅ Вебхук (Асинхронный)
+# ✅ Синхронный обработчик вебхуков
 @app.route('/webhook', methods=['POST'])
 def webhook():
     update = request.get_json()
@@ -47,7 +46,7 @@ def webhook():
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        asyncio.create_task(application.process_update(telegram_update))
+        asyncio.run(application.process_update(telegram_update))  # ❗ Используем `asyncio.run()` вместо `create_task()`
 
     return 'OK', 200
 
