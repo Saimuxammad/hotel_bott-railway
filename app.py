@@ -26,16 +26,15 @@ application = ApplicationBuilder().token(BOT_TOKEN).build()
 application.add_handler(main_menu_handler)
 application.add_handler(booking_handler)
 
-# 🔥 Вебхук с исправлением `await`
+# 🔥 Вебхук с исправлением `async` (Flask не поддерживает async-функции напрямую)
 @app.route('/webhook', methods=['POST'])
-async def webhook():
+def webhook():
     update = request.get_json()
     logging.info(f"📩 Получено обновление: {update}")
-    asyncio.run(application.process_update(update)
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        await application.process_update(telegram_update)  # ✅ Теперь `await` есть!
+        asyncio.run(application.process_update(telegram_update))  # ✅ Теперь `async` работает!
 
     return 'OK', 200
 
