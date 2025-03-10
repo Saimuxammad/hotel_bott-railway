@@ -34,20 +34,20 @@ async def start_bot():
     await application.updater.start_polling()
 
 
-# ✅ Запуск инициализации бота при старте сервера
+# ✅ Запуск бота в отдельном потоке
 loop = asyncio.get_event_loop()
-loop.run_until_complete(start_bot())
+loop.create_task(start_bot())
 
 
 # ✅ Вебхук (Асинхронный)
 @app.route('/webhook', methods=['POST'])
-async def webhook():
+def webhook():
     update = request.get_json()
     logging.info(f"📩 Получено обновление: {update}")
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        application.create_task(application.process_update(telegram_update))
+        asyncio.create_task(application.process_update(telegram_update))
 
     return 'OK', 200
 
