@@ -31,6 +31,7 @@ application.add_handler(booking_handler)
 async def webhook():
     update = request.get_json()
     logging.info(f"📩 Получено обновление: {update}")
+    asyncio.run(application.process_update(update)
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
