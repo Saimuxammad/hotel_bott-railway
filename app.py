@@ -1,18 +1,19 @@
 import os
 import logging
 import asyncio
-from flask import Flask, request
+from fastapi import FastAPI, Request
 from telegram import Update
 from telegram.ext import Application, ApplicationBuilder
 from handlers.booking import booking_handler
 from handlers.main_menu import main_menu_handler
 from database import init_db
 from dotenv import load_dotenv
+import uvicorn
 
 # Настройка логов
 logging.basicConfig(level=logging.INFO)
 
-app = Flask(__name__)
+app = FastAPI()
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -26,31 +27,27 @@ application = Application.builder().token(BOT_TOKEN).build()
 application.add_handler(main_menu_handler)
 application.add_handler(booking_handler)
 
-
 async def start_bot():
     """Запуск бота"""
     await application.initialize()
     await application.start()
     logging.info("✅ Бот успешно запущен!")
 
+# Запуск бота в фоновом режиме
+asyncio.create_task(start_bot())
 
-# Запускаем бота в фоновом режиме
-asyncio.run(start_bot())
+@app.post("/webhook")
+async def webhook(request: Request):
+    """Обработчик Telegram Webhook"""
+    update_data = await request.json()
+    logging.info(f"📩 Получено обновление: {update_data}")
 
+    update = Update.de_json(update_data, application.bot)
+    await application.process_update(update)
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    update = request.get_json()
-    logging.info(f"📩 Получено обновление: {update}")
+    return {"status": "ok"}
 
-    if update:
-        telegram_update = Update.de_json(update, application.bot)
-        asyncio.run(application.process_update(telegram_update))
-
-    return 'OK', 200
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     init_db()
-    logging.info("🚀 Запуск Flask-сервера...")
-    app.run(host='0.0.0.0', port=8080)
+    logging.info("🚀 Запуск FastAPI-сервера через uvicorn...")
+    uvicorn.run("app:app", host="0.0.0.0", port=8080, workers=1)

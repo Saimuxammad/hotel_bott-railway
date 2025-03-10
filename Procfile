@@ -1,1 +1,1 @@
-web: gunicorn -w 1 -k gevent app:app
+web: gunicorn --worker-class uvicorn.workers.UvicornWorker -w 1 app:app
