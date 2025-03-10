@@ -3,7 +3,7 @@ import logging
 import asyncio
 from flask import Flask, request
 from telegram import Update
-from telegram.ext import ApplicationBuilder
+from telegram.ext import Application, ApplicationBuilder
 from handlers.booking import booking_handler
 from handlers.main_menu import main_menu_handler
 from database import init_db
@@ -22,29 +22,35 @@ if not BOT_TOKEN:
     raise ValueError("❌ TELEGRAM_BOT_TOKEN не найден! Проверьте .env или Railway.")
 
 # Инициализация Telegram-бота
-application = ApplicationBuilder().token(BOT_TOKEN).build()
+application = Application.builder().token(BOT_TOKEN).build()
 application.add_handler(main_menu_handler)
 application.add_handler(booking_handler)
 
-# ✅ Инициализация бота перед обработкой вебхука
-async def init_telegram():
-    await application.initialize()  # <-- Это исправляет ошибку
+
+async def start_bot():
+    """Запуск бота"""
+    await application.initialize()
     await application.start()
     await application.updater.start_polling()
 
-asyncio.run(init_telegram())  # <-- Запуск бота при старте
 
-# 🔥 Вебхук Flask (Синхронный)
+# ✅ Запуск инициализации бота при старте сервера
+loop = asyncio.get_event_loop()
+loop.run_until_complete(start_bot())
+
+
+# ✅ Вебхук (Асинхронный)
 @app.route('/webhook', methods=['POST'])
-def webhook():
+async def webhook():
     update = request.get_json()
     logging.info(f"📩 Получено обновление: {update}")
 
     if update:
         telegram_update = Update.de_json(update, application.bot)
-        asyncio.run(application.process_update(telegram_update))  # ✅ Теперь корректно
+        await application.process_update(telegram_update)  # Теперь без ошибок
 
     return 'OK', 200
+
 
 if __name__ == '__main__':
     init_db()
