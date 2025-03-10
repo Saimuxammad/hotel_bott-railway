@@ -13,6 +13,10 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("❌ DATABASE_URL не найден! Проверьте настройки Railway.")
 
+# Приводим `postgres://` к `postgresql://`, если это необходимо
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 # Подключаемся к базе
 engine = create_engine(DATABASE_URL, connect_args={'client_encoding': 'utf8'})
 Session = scoped_session(sessionmaker(bind=engine))
@@ -57,7 +61,7 @@ def save_booking(user_data):
 
 # Проверяем подключение
 try:
-    engine.connect()
-    print("✅ База данных доступна!")
+    with engine.connect() as conn:
+        print("✅ База данных доступна!")
 except Exception as e:
     print(f"❌ Ошибка при подключении к базе: {e}")
