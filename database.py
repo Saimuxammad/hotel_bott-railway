@@ -18,7 +18,7 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # Подключаемся к базе
-engine = create_engine(DATABASE_URL, connect_args={'client_encoding': 'utf8'})
+engine = create_engine(DATABASE_URL, echo=True)
 Session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
 
