@@ -1,6 +1,5 @@
 import os
 import logging
-import threading
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application
@@ -26,7 +25,6 @@ application = Application.builder().token(BOT_TOKEN).build()
 application.add_handler(main_menu_handler)
 application.add_handler(booking_handler)
 
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     """Обработчик вебхука"""
@@ -38,7 +36,6 @@ def webhook():
         application.create_task(application.process_update(telegram_update))
 
     return 'OK', 200
-
 
 if __name__ == '__main__':
     init_db()
