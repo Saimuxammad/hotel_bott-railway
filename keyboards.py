@@ -9,7 +9,8 @@ def main_menu_uz():
         [InlineKeyboardButton("🗺 Qanday yetish mumkin?", callback_data='map'),
          InlineKeyboardButton("⭐️ Sharhlar", callback_data='reviews')],
         [InlineKeyboardButton("🇺🇿 UZ", callback_data='lang_uz'),
-         InlineKeyboardButton("🇷🇺 RU", callback_data='lang_ru')]
+         InlineKeyboardButton("🇷🇺 RU", callback_data='lang_ru')],
+        [InlineKeyboardButton("⬅️ Asosiy menyu", callback_data='main_menu')]  # ДОБАВИЛИ КНОПКУ
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -22,6 +23,7 @@ def main_menu_ru():
         [InlineKeyboardButton("🗺 Как добраться?", callback_data='map'),
          InlineKeyboardButton("⭐️ Отзывы", callback_data='reviews')],
         [InlineKeyboardButton("🇺🇿 UZ", callback_data='lang_uz'),
-         InlineKeyboardButton("🇷🇺 RU", callback_data='lang_ru')]
+         InlineKeyboardButton("🇷🇺 RU", callback_data='lang_ru')],
+        [InlineKeyboardButton("⬅️ Главное меню", callback_data='main_menu')]  # ДОБАВИЛИ КНОПКУ
     ]
     return InlineKeyboardMarkup(keyboard)
